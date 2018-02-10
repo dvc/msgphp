@@ -13,7 +13,7 @@ class ChangeCredentialEvent implements DomainEventInterface
 {
     public $fields;
 
-    public function __construct(array $fields)
+    final public function __construct(array $fields)
     {
         $this->fields = $fields;
     }

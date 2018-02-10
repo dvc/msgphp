@@ -16,7 +16,7 @@ class UserCredentialChangedEvent
     public $oldCredential;
     public $newCredential;
 
-    public function __construct(User $user, CredentialInterface $oldCredential, CredentialInterface $newCredential)
+    final public function __construct(User $user, CredentialInterface $oldCredential, CredentialInterface $newCredential)
     {
         $this->user = $user;
         $this->oldCredential = $oldCredential;
