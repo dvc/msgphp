@@ -118,7 +118,8 @@ final class Extension extends BaseExtension implements PrependExtensionInterface
 
             $container->getDefinition(ConsoleInfra\Command\AddUserRoleCommand::class)
                 ->setArgument('$contextBuilder', ContainerHelper::registerAnonymous($container, BaseConsoleInfra\ContextBuilder\ClassContextBuilder::class, true)
-                    ->setArgument('$class', Entity\UserRole::class));
+                    ->setArgument('$class', Entity\UserRole::class)
+                    ->setArgument('$flags', BaseConsoleInfra\ContextBuilder\ClassContextBuilder::REUSE_DEFINITION));
 
             $container->getDefinition(ConsoleInfra\Command\CreateUserCommand::class)
                 ->setArgument('$contextBuilder', ContainerHelper::registerAnonymous($container, BaseConsoleInfra\ContextBuilder\ClassContextBuilder::class, true)
