@@ -34,10 +34,12 @@ final class DomainIdentityMapping implements DomainIdentityMappingInterface
 
     private function getMetadata(string $class): ClassMetadata
     {
-        try {
-            return $this->em->getMetadataFactory()->getMetadataFor($class);
-        } catch (MappingException $e) {
+        $factory = $this->em->getMetadataFactory();
+
+        if (!class_exists($class) || $factory->isTransient($class)) {
             throw InvalidClassException::create($class);
         }
+
+        return $factory->getMetadataFor($class);
     }
 }
