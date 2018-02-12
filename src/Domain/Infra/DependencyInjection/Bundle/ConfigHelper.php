@@ -102,24 +102,27 @@ final class ConfigHelper
 
     public static function resolveCommandMapping(array $classMapping, array $mapping, array &$config): void
     {
-        foreach ($mapping as $class => $traits) {
-            $mappedClass = $classMapping[$class] ?? $class;
-            if ($class !== $mappedClass && !is_subclass_of($mappedClass, $class)) {
+        foreach ($mapping as $class => $commandConfig) {
+            if (!isset($classMapping[$class])) {
                 continue;
             }
 
-            $isEventHandler = is_subclass_of($mappedClass, DomainEventHandlerInterface::class);
-            foreach ($traits as $trait => $traitConfig) {
-                if (!self::uses($mappedClass, $trait)) {
+            $class = $classMapping[$class];
+            $isEventHandler = is_subclass_of($class, DomainEventHandlerInterface::class);
+            foreach ($commandConfig as $i => $commands) {
+                if (is_int($i)) {
+                    $config[$commands] = true;
                     continue;
                 }
 
-                $config += array_fill_keys($traitConfig, $isEventHandler);
+                if (self::uses($i, $class)) {
+                    $config += array_fill_keys($commands, $isEventHandler);
+                }
             }
         }
     }
 
-    private static function uses(string $class, string $trait): bool
+    private static function uses(string $trait, string $class): bool
     {
         static $uses = [];
 

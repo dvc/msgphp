@@ -35,7 +35,13 @@ final class Configuration implements ConfigurationInterface
         ],
     ];
     private const COMMAND_MAPPING = [
+        CredentialInterface::class => [
+            Command\ChangeUserCredentialCommand::class,
+        ],
         Entity\User::class => [
+            Command\CreateUserCommand::class,
+            Command\DeleteUserCommand::class,
+
             Features\CanBeConfirmed::class => [
                 Command\ConfirmUserCommand::class,
             ],
@@ -46,6 +52,10 @@ final class Configuration implements ConfigurationInterface
             Entity\Features\ResettablePassword::class => [
                 Command\RequestUserPasswordCommand::class,
             ],
+        ],
+        Entity\UserRole::class => [
+            Command\AddUserRoleCommand::class,
+            Command\DeleteUserRoleCommand::class,
         ],
     ];
 
@@ -125,10 +135,6 @@ final class Configuration implements ConfigurationInterface
 
                     $config['username_field'] = $userCredential['username_field'];
                     $config['username_lookup'] = $usernameLookup;
-                    $config['commands'] += [
-                        Command\CreateUserCommand::class => true,
-                        Command\DeleteUserCommand::class => true,
-                    ];
 
                     if (null !== $userCredential['class']) {
                         if (isset($config['class_mapping'][CredentialInterface::class])) {
@@ -136,7 +142,6 @@ final class Configuration implements ConfigurationInterface
                         }
 
                         $config['class_mapping'][CredentialInterface::class] = $userCredential['class'];
-                        $config['commands'][Command\ChangeUserCredentialCommand::class] = true;
                     }
 
                     ConfigHelper::resolveCommandMapping($config['class_mapping'], self::COMMAND_MAPPING, $config['commands']);

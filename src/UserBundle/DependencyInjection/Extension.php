@@ -76,6 +76,10 @@ final class Extension extends BaseExtension implements PrependExtensionInterface
                 Command\Handler\EnableUserHandler::class,
                 Command\Handler\RequestUserPasswordHandler::class,
             ]);
+            ContainerHelper::removeIf($container, !$container->has(Repository\UserRoleRepositoryInterface::class), [
+                Command\Handler\AddUserRoleHandler::class,
+                Command\Handler\DeleteUserRoleHandler::class,
+            ]);
             ContainerHelper::configureCommandMessages($container, $config['class_mapping'], $config['commands']);
             ContainerHelper::configureEventMessages($container, $config['class_mapping'], array_map(function (string $file): string {
                 return 'MsgPhp\\User\\Event\\'.basename($file, '.php');
@@ -109,6 +113,25 @@ final class Extension extends BaseExtension implements PrependExtensionInterface
         if (class_exists(ConsoleEvents::class)) {
             $loader->load('console.php');
 
+            $container->getDefinition(BaseConsoleInfra\ContextBuilder\ClassContextBuilder::class)
+                ->setArgument('$classMapping', $config['class_mapping']);
+
+            $container->getDefinition(ConsoleInfra\Command\AddUserRoleCommand::class)
+                ->setArgument('$contextBuilder', ContainerHelper::registerAnonymous($container, BaseConsoleInfra\ContextBuilder\ClassContextBuilder::class, true)
+                    ->setArgument('$class', Entity\UserRole::class));
+
+            $container->getDefinition(ConsoleInfra\Command\CreateUserCommand::class)
+                ->setArgument('$contextBuilder', ContainerHelper::registerAnonymous($container, BaseConsoleInfra\ContextBuilder\ClassContextBuilder::class, true)
+                    ->setArgument('$class', Entity\User::class));
+
+            $container->getDefinition(ConsoleInfra\Command\ChangeUserCredentialCommand::class)
+                ->setArgument('$contextBuilder', ContainerHelper::registerAnonymous($container, BaseConsoleInfra\ContextBuilder\ClassContextBuilder::class, true)
+                    ->setArgument('$class', CredentialInterface::class)
+                    ->setArgument('$flags', BaseConsoleInfra\ContextBuilder\ClassContextBuilder::ALWAYS_OPTIONAL | BaseConsoleInfra\ContextBuilder\ClassContextBuilder::NO_DEFAULTS));
+
+            ContainerHelper::removeIf($container, !$container->has(Command\Handler\AddUserRoleHandler::class), [
+                ConsoleInfra\Command\AddUserRoleCommand::class,
+            ]);
             ContainerHelper::removeIf($container, !$container->has(Command\Handler\ChangeUserCredentialHandler::class), [
                 ConsoleInfra\Command\ChangeUserCredentialCommand::class,
             ]);
@@ -121,6 +144,9 @@ final class Extension extends BaseExtension implements PrependExtensionInterface
             ContainerHelper::removeIf($container, !$container->has(Command\Handler\DeleteUserHandler::class), [
                 ConsoleInfra\Command\DeleteUserCommand::class,
             ]);
+            ContainerHelper::removeIf($container, !$container->has(Command\Handler\DeleteUserRoleHandler::class), [
+                ConsoleInfra\Command\DeleteUserRoleCommand::class,
+            ]);
             ContainerHelper::removeIf($container, !$container->has(Command\Handler\DisableUserHandler::class), [
                 ConsoleInfra\Command\DisableUserCommand::class,
             ]);
@@ -130,22 +156,6 @@ final class Extension extends BaseExtension implements PrependExtensionInterface
             ContainerHelper::removeIf($container, !$container->has(Repository\UsernameRepositoryInterface::class), [
                 ConsoleInfra\Command\SynchronizeUsernamesCommand::class,
             ]);
-
-            $container->getDefinition(BaseConsoleInfra\ContextBuilder\ClassContextBuilder::class)
-                ->setArgument('$classMapping', $config['class_mapping']);
-
-            if ($container->hasDefinition(ConsoleInfra\Command\CreateUserCommand::class)) {
-                $container->getDefinition(ConsoleInfra\Command\CreateUserCommand::class)
-                    ->setArgument('$contextBuilder', ContainerHelper::registerAnonymous($container, BaseConsoleInfra\ContextBuilder\ClassContextBuilder::class, true)
-                        ->setArgument('$class', $config['class_mapping'][Entity\User::class]));
-            }
-
-            if ($container->hasDefinition(ConsoleInfra\Command\ChangeUserCredentialCommand::class)) {
-                $container->getDefinition(ConsoleInfra\Command\ChangeUserCredentialCommand::class)
-                    ->setArgument('$contextBuilder', ContainerHelper::registerAnonymous($container, BaseConsoleInfra\ContextBuilder\ClassContextBuilder::class, true)
-                        ->setArgument('$class', $config['class_mapping'][CredentialInterface::class])
-                        ->setArgument('$flags', BaseConsoleInfra\ContextBuilder\ClassContextBuilder::ALWAYS_OPTIONAL | BaseConsoleInfra\ContextBuilder\ClassContextBuilder::NO_DEFAULTS));
-            }
         }
     }
 
