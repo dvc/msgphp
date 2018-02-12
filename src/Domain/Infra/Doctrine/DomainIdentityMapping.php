@@ -6,7 +6,6 @@ namespace MsgPhp\Domain\Infra\Doctrine;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\MappingException;
 use MsgPhp\Domain\DomainIdentityMappingInterface;
 use MsgPhp\Domain\Exception\InvalidClassException;
 
