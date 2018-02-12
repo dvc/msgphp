@@ -32,6 +32,6 @@ trait RolesField
      */
     public function getRoles(): DomainCollectionInterface
     {
-        return $this->roles instanceof DomainCollectionInterface ? $this->roles : ($this->roles = DomainCollectionFactory::create($this->roles));
+        return $this->roles instanceof DomainCollectionInterface ? $this->roles : DomainCollectionFactory::create($this->roles);
     }
 }
