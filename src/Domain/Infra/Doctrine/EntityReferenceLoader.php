@@ -34,6 +34,6 @@ final class EntityReferenceLoader
             return null;
         }
 
-        return $this->em->getPartialReference($class, $this->identityHelper->toIdentity($class, ...$ids));
+        return $this->em->getReference($class, $this->identityHelper->toIdentity($class, ...$ids));
     }
 }
