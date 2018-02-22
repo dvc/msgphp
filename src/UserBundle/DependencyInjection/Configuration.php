@@ -58,7 +58,7 @@ final class Configuration implements ConfigurationInterface
 
         $treeBuilder->root(Extension::ALIAS)
             ->append(
-                ConfigHelper::createClassMappingNode('class_mapping', $requiredEntities, $entities, true, function (array $value) use ($ids): array {
+                ConfigHelper::createClassMappingNode('class_mapping', $requiredEntities, ConfigHelper::getAbstracts($entities), true, function (array $value) use ($ids): array {
                     return $value + array_fill_keys($ids, null);
                 })
             )
@@ -114,12 +114,8 @@ final class Configuration implements ConfigurationInterface
                             $usernameLookup[$userClass][] = ['target' => $userClass, 'field' => $userCredential['username_field']];
                         }
 
-                        if (!isset($config['class_mapping'][Entity\Username::class])) {
-                            $config['class_mapping'][Entity\Username::class] = Entity\Username::class;
-                        }
-
-                        if (isset($usernameLookup[$usernameClass = $config['class_mapping'][Entity\Username::class]])) {
-                            throw new \LogicException(sprintf('Username lookup mapping for "%s" is not applicable.', $usernameClass));
+                        if (isset($usernameLookup[Entity\Username::class])) {
+                            throw new \LogicException(sprintf('Username lookup mapping for "%s" is not applicable.', Entity\Username::class));
                         }
                     }
 

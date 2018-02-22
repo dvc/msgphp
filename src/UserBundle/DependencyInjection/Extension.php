@@ -191,7 +191,7 @@ final class Extension extends BaseExtension implements PrependExtensionInterface
             $container->removeDefinition(DoctrineInfra\Event\UsernameListener::class);
         }
 
-        ContainerHelper::configureDoctrineOrmRepositories($container, $config['class_mapping'], [
+        ContainerHelper::configureDoctrineOrmRepositories($container, [Entity\Username::class => Entity\Username::class] + $config['class_mapping'], [
             DoctrineInfra\Repository\UserRepository::class => Entity\User::class,
             DoctrineInfra\Repository\UsernameRepository::class => $config['username_lookup'] ? Entity\Username::class : null,
             DoctrineInfra\Repository\UserAttributeValueRepository::class => Entity\UserAttributeValue::class,

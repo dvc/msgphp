@@ -74,6 +74,13 @@ final class ConfigHelper
         return $node;
     }
 
+    public static function getAbstracts(array $classes): array
+    {
+        return array_values(array_filter($classes, function (string $class) {
+            return ($r = new \ReflectionClass($class))->isAbstract() || $r->isInterface();
+        }));
+    }
+
     public static function resolveResolveDataTypeMapping(ContainerBuilder $container, array &$config): void
     {
         if (!$container->hasParameter('msgphp.default_data_type')) {

@@ -45,7 +45,7 @@ final class Configuration implements ConfigurationInterface
 
         $treeBuilder->root(Extension::ALIAS)
             ->append(
-                ConfigHelper::createClassMappingNode('class_mapping', $requiredEntities, $entities, true, function (array $value) use ($ids): array {
+                ConfigHelper::createClassMappingNode('class_mapping', $requiredEntities, ConfigHelper::getAbstracts($entities), true, function (array $value) use ($ids): array {
                     return $value + array_fill_keys($ids, null);
                 })
             )
