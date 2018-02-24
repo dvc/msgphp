@@ -6,7 +6,6 @@ namespace MsgPhp\Domain\Infra\DependencyInjection\Compiler;
 
 use Doctrine\ORM\EntityManagerInterface as DoctrineEntityManager;
 use MsgPhp\Domain\{DomainIdentityHelper, DomainIdentityMappingInterface, Factory, Message};
-use MsgPhp\Domain\Infra\DependencyInjection\Bundle\ContainerHelper;
 use MsgPhp\Domain\Infra\{Doctrine as DoctrineInfra, InMemory as InMemoryInfra, SimpleBus as SimpleBusInfra};
 use SimpleBus\Message\Bus\MessageBus as SimpleMessageBus;
 use Symfony\Component\DependencyInjection\Alias;
@@ -88,18 +87,18 @@ final class ResolveDomainPass implements CompilerPassInterface
             ->setArgument('$factory', new Reference(Factory\ClassMappingObjectFactory::class.'.inner'))
             ->setArgument('$mapping', $classMapping);
 
-        $entityFactory = self::register($container, Factory\EntityAwareFactory::class)
+        self::register($container, $entityFactoryId = Factory\EntityAwareFactory::class)
             ->setAutowired(true)
             ->setArgument('$identifierMapping', $idClassMapping);
 
         if ($container->has(DoctrineEntityManager::class)) {
-            $entityFactory = self::register($container, DoctrineInfra\EntityAwareFactory::class)
+            self::register($container, $entityFactoryId = DoctrineInfra\EntityAwareFactory::class)
                 ->setAutowired(true)
                 ->setArgument('$factory', new Reference(Factory\EntityAwareFactory::class));
         }
 
         self::alias($container, Factory\DomainObjectFactoryInterface::class, Factory\DomainObjectFactory::class);
-        self::alias($container, Factory\EntityAwareFactoryInterface::class, $entityFactory->getClass());
+        self::alias($container, Factory\EntityAwareFactoryInterface::class, $entityFactoryId);
     }
 
     private function registerMessageBus(ContainerBuilder $container): void
